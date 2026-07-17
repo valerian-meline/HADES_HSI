@@ -125,18 +125,4 @@ python scripts\benchmark_alignment_strategies.py --help
 
 See [ALIGNMENT_STRATEGIES.md](ALIGNMENT_STRATEGIES.md) for details.
 
-## Data Policy
 
-Raw hyperspectral data and generated analysis outputs are intentionally ignored by Git:
-
-- `VNIR2/`
-- `ROOT2_analysis/`
-- `.bil`, `.hdr`, `.npy`, `.npz`
-- generated `.csv` files
-- generated image exports
-
-This keeps the GitHub repository focused on code and documentation. Store raw data and large analysis outputs outside Git or in a dedicated data archive.
-
-## License
-
-No license has been selected yet. Add a license file before distributing or reusing the code outside the project team.
