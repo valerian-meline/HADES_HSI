@@ -1,0 +1,18 @@
+name: hpx-hades
+channels:
+  - conda-forge
+dependencies:
+  - python>=3.11,<3.14
+  - pip
+  - numpy
+  - pandas
+  - matplotlib
+  - scipy
+  - scikit-image
+  - scikit-learn
+  - opencv
+  - imageio
+  - pillow
+  - pip:
+      - spectral
+      - pybaselines

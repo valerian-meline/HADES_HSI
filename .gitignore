@@ -1,0 +1,50 @@
+# Python cache and environments
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+.env
+.env.*
+
+# Tooling caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# Editors and operating systems
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Local hyperspectral data and generated analysis products
+VNIR2/
+ROOT2_analysis/
+Measurement/
+Analysis/
+processed_images/
+band_export/
+alignment_benchmark/
+output/
+outputs/
+logs/
+
+# Large sensor data and derived arrays/images/tables
+*.bil
+*.hdr
+*.npy
+*.npz
+*.png
+*.jpg
+*.jpeg
+*.tif
+*.tiff
+*.csv
+
+# Keep dependency manifests tracked even though generated CSV/YAML-like data are ignored.
+!requirements.txt
+!environment.yml
