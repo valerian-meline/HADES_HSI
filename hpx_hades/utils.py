@@ -13,6 +13,40 @@ def extract_vnir_id(bil_filename):
     return None
 
 
+def extract_root_mask_id(root_mask_path):
+    """
+    Extract a root-mask ID from the folder above plant_N.
+
+    Supported folder examples:
+    - 123_16_exp63_ox10_417r_high_trans_01_ROOT2_Fish Eye Corrected_A0
+    - 151_2_2026-07-05_10-47-42_exp91_001_ROOT1_Original
+    """
+    folder = Path(root_mask_path).parent.parent.name
+    parts = folder.split('_')
+    if len(parts) < 4 or not parts[0].isdigit() or not parts[1].isdigit():
+        return None
+
+    suffix_start = 2
+    if (
+        len(parts) >= 5
+        and re.fullmatch(r"\d{4}-\d{2}-\d{2}", parts[2])
+        and re.fullmatch(r"\d{2}-\d{2}-\d{2}", parts[3])
+    ):
+        suffix_start = 4
+
+    suffix_parts = parts[suffix_start:]
+    root_marker_idx = next(
+        (idx for idx, part in enumerate(suffix_parts) if re.fullmatch(r"ROOT\d+", part, re.IGNORECASE)),
+        None,
+    )
+    if root_marker_idx is not None:
+        suffix_parts = suffix_parts[:root_marker_idx]
+    if not suffix_parts:
+        return None
+
+    return f"{parts[0]}_{parts[1]}_{'_'.join(suffix_parts)}"
+
+
 def find_two_closest_root_mask_rounds(sample_id, root_masks):
     """
     For a given VNIR ID, returns two lists of root masks:
@@ -30,19 +64,18 @@ def find_two_closest_root_mask_rounds(sample_id, root_masks):
     round_to_masks = {}
 
     for rm in root_masks:
-        folder = os.path.basename(os.path.dirname(os.path.dirname(rm)))
-        parts = folder.split('_')
+        rm_id = extract_root_mask_id(rm)
+        if not rm_id:
+            continue
 
-        if len(parts) >= 4:
-            # Remove the 3rd element (index 2), which is the timestamp
-            cleaned_parts = parts[:2] + parts[2:]
-            rm_round_str = parts[1]  # e.g., "16"
-            rm_suffix = '_'.join(cleaned_parts[2:])  # everything after round, excluding timestamp
-            rm_suffix = re.sub(r'_ROOT1_Fish Eye Corrected_A0$', '', rm_suffix)
-            rm_suffix = re.sub(r'_ROOT2_Fish Eye Corrected_A0$', '', rm_suffix)
+        try:
+            _, rm_round_str, rm_suffix = rm_id.split('_', 2)
             rm_round = int(rm_round_str)
-            if rm_suffix == sample_suffix:
-                round_to_masks.setdefault(rm_round, []).append(rm)
+        except Exception:
+            continue
+
+        if rm_suffix == sample_suffix:
+            round_to_masks.setdefault(rm_round, []).append(rm)
 
     # Split into lower and upper candidates
     lower_rounds = [r for r in round_to_masks if r < vnir_round]
